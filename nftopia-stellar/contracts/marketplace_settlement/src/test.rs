@@ -24,13 +24,16 @@ impl MockToken {
 pub struct MockNft;
 #[soroban_sdk::contractimpl]
 impl MockNft {
+    pub fn set_owner(env: Env, owner: Address) {
+        env.storage()
+            .instance()
+            .set(&soroban_sdk::Symbol::new(&env, "owner"), &owner);
+    }
     pub fn owner_of(env: Env, _id: u64) -> Address {
-        // Return a mock owner, but since check_nft_ownership needs to match,
-        // we'll just store and return the current caller, or for testing we can just
-        // return the expected owner. We'll use a hack to get an address.
-        Address::generate(&env) // This will fail the owner check if not careful!
-                                // Actually, to make tests pass, we can just skip the real check in mock or
-                                // store the owner.
+        env.storage()
+            .instance()
+            .get(&soroban_sdk::Symbol::new(&env, "owner"))
+            .unwrap_or_else(|| Address::generate(&env))
     }
     pub fn transfer(_env: Env, _from: Address, _to: Address, _token_id: u64) {}
 }
@@ -84,9 +87,10 @@ fn test_create_sale_success() {
     let (env, cid, client, admin) = new_env();
     let asset = mk_asset(&env);
     let seller = Address::generate(&env);
-    let nft = Address::generate(&env);
+    let nft = env.register(MockNft, ());
     let creator = Address::generate(&env);
     reg(&env, &cid, &nft, &creator, &admin, &asset);
+    MockNftClient::new(&env, &nft).set_owner(&seller);
     let id = client.create_sale(&seller, &nft, &1u64, &1_000_000i128, &asset, &86400u64);
     assert_eq!(id, 1u64);
 }
@@ -95,10 +99,11 @@ fn test_create_sale_success() {
 fn test_get_sale_after_create() {
     let (env, cid, client, _admin) = new_env();
     let seller = Address::generate(&env);
-    let nft = Address::generate(&env);
+    let nft = env.register(MockNft, ());
     let creator = Address::generate(&env);
     let cur = mk_asset(&env);
     reg(&env, &cid, &nft, &creator, &_admin, &cur);
+    MockNftClient::new(&env, &nft).set_owner(&seller);
     let id = client.create_sale(&seller, &nft, &1u64, &500_000i128, &cur, &3600u64);
     let sale = client.get_sale(&id);
     assert_eq!(sale.seller, seller);
@@ -110,9 +115,10 @@ fn test_cancel_sale_by_seller() {
     let (env, cid, client, admin) = new_env();
     let asset = mk_asset(&env);
     let seller = Address::generate(&env);
-    let nft = Address::generate(&env);
+    let nft = env.register(MockNft, ());
     let creator = Address::generate(&env);
     reg(&env, &cid, &nft, &creator, &admin, &asset);
+    MockNftClient::new(&env, &nft).set_owner(&seller);
     let id = client.create_sale(&seller, &nft, &1u64, &1_000_000i128, &asset, &86400u64);
     client.cancel_transaction(&id, &Symbol::new(&env, "sale"), &seller);
 }
@@ -123,9 +129,10 @@ fn test_cancel_sale_non_seller_fails() {
     let asset = mk_asset(&env);
     let seller = Address::generate(&env);
     let attacker = Address::generate(&env);
-    let nft = Address::generate(&env);
+    let nft = env.register(MockNft, ());
     let creator = Address::generate(&env);
     reg(&env, &cid, &nft, &creator, &admin, &asset);
+    MockNftClient::new(&env, &nft).set_owner(&seller);
     let id = client.create_sale(&seller, &nft, &1u64, &1_000_000i128, &asset, &86400u64);
     assert!(client
         .try_cancel_transaction(&id, &Symbol::new(&env, "sale"), &attacker)
@@ -138,9 +145,10 @@ fn test_execute_sale_wrong_payment_fails() {
     let asset = mk_asset(&env);
     let seller = Address::generate(&env);
     let buyer = Address::generate(&env);
-    let nft = Address::generate(&env);
+    let nft = env.register(MockNft, ());
     let creator = Address::generate(&env);
     reg(&env, &cid, &nft, &creator, &admin, &asset);
+    MockNftClient::new(&env, &nft).set_owner(&seller);
     let id = client.create_sale(&seller, &nft, &1u64, &1_000_000i128, &asset, &86400u64);
     assert!(client.try_execute_sale(&id, &buyer, &999_999i128).is_err());
 }
