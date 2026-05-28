@@ -11,6 +11,7 @@ import { Collection } from "@/lib/interfaces";
 import { API_CONFIG } from "@/lib/config";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLocalizedRoute } from "@/lib/routing";
 
 /** Minimal shape matching backend CreateNftDto */
 interface CreateNftDto {
@@ -28,6 +29,7 @@ export default function MintNFTPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user, isAuthenticated, accessToken } = useAuthStore();
+  const localizedRoute = useLocalizedRoute();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [contractAddress, setContractAddress] = useState("");
@@ -40,9 +42,9 @@ export default function MintNFTPage() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/auth/login");
+      router.push(localizedRoute("/auth/login"));
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, localizedRoute]);
 
   // Fetch user's collections when user is available
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function MintNFTPage() {
         throw new Error(msg);
       }
 
-      router.push("/collections");
+      router.push(localizedRoute("/collections"));
     } catch (err) {
       console.error("Mint error:", err);
       setError(

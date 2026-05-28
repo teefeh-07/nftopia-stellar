@@ -7,11 +7,13 @@ import { useAuth } from "@/lib/stores/auth-store";
 import { useToast } from "@/lib/stores";
 import Link from "next/link";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSeparator } from "@/components/ui/dropdown";
+import { useLocalizedRoute } from "@/lib/routing";
 
 export function UserDropdown() {
   const { user, logout, isAuthenticated } = useAuth();
   const { showSuccess, showError } = useToast();
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const localizedRoute = useLocalizedRoute();
 
   if (!isAuthenticated || !user) return null;
 
@@ -92,7 +94,7 @@ export function UserDropdown() {
         <div className="py-1">
           {/* Link items use role="menuitem" directly */}
           <Link
-            href="/creator-dashboard"
+            href={localizedRoute("/creator-dashboard")}
             role="menuitem"
             className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-purple-600/20 transition-colors focus-visible:outline-none focus-visible:bg-purple-600/20"
           >
@@ -101,7 +103,7 @@ export function UserDropdown() {
           </Link>
 
           <Link
-            href="/creator-dashboard/settings"
+            href={localizedRoute("/creator-dashboard/settings")}
             role="menuitem"
             className="flex items-center gap-3 px-4 py-2 text-sm text-white hover:bg-purple-600/20 transition-colors focus-visible:outline-none focus-visible:bg-purple-600/20"
           >
