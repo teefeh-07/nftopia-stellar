@@ -26,9 +26,11 @@ export function WalletModal({ open, onClose, onConnected }: WalletModalProps) {
   const [lastError, setLastError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (open) {
+      lastFocusedElementRef.current = document.activeElement as HTMLElement;
       detectInstalledWallets().then(setWallets);
       setIsVisible(true);
       // Prevent background scrolling
@@ -36,6 +38,8 @@ export function WalletModal({ open, onClose, onConnected }: WalletModalProps) {
     } else {
       setIsVisible(false);
       document.body.style.overflow = '';
+      // Restore focus to the last focused element
+      lastFocusedElementRef.current?.focus();
     }
     
     return () => {
