@@ -41,7 +41,7 @@ export default function LoginPage() {
   // Dynamic fallback handling for emailLogin function versions
   const authState = useAuth();
   const emailLogin =
-    (gameState as any).loginWithEmail || (gameState as any).emailLogin || authState.clearError;
+    (authState as any).loginWithEmail || (authState as any).emailLogin || authState.clearError;
 
   // Stellar wallet state hooks
   const {
