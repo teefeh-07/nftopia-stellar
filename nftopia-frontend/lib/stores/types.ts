@@ -5,9 +5,15 @@ export interface User {
   address?: string;
   walletAddress: string;
   walletProvider?: string;
+  isArtist?: boolean;
   username?: string;
   email?: string;
   profileImage?: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
+  twitterHandle?: string;
+  instagramHandle?: string;
+  website?: string;
   bio?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -54,6 +60,7 @@ export type AuthStore = {
   emailLogin: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<string>;
+  getCurrentUser: () => User | null;
 };
 
 // Collection Store Types

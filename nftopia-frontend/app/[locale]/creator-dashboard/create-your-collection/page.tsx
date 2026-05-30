@@ -18,6 +18,7 @@ import { FileDropZone } from "@/lib";
 import type { FileWithMeta } from "@/lib/interfaces";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/lib/stores/auth-store";
+import { useLocalizedRoute } from "@/lib/routing";
 
 interface CreateCollectionForm {
   contractAddress: string;
@@ -41,6 +42,7 @@ export default function CreateYourCollection() {
   const router = useRouter();
   const { showSuccess, showError } = useToast();
   const { user } = useAuth();
+  const localizedRoute = useLocalizedRoute();
 
   const [form, setForm] = useState<CreateCollectionForm>({
     contractAddress: "",
@@ -137,6 +139,7 @@ export default function CreateYourCollection() {
 
       setTimeout(() => {
         router.push(`/${locale}/creator-dashboard/collections`);
+        router.push(localizedRoute("/creator-dashboard/collections"));
       }, 2000);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t("createCollection.errors.failedToCreate");

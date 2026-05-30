@@ -20,9 +20,10 @@ import {
   EyeOff,
   ChevronRight,
 } from "lucide-react";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { authInstrumentation } from "@/lib/telemetry/auth-instrumentation";
 
 type AuthMode = "wallet" | "email";
 
@@ -59,6 +60,9 @@ export default function LoginPage() {
   const [mode, setMode] = useState<AuthMode>("wallet");
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [challengeRequested, setChallengeRequested] = useState(false);
+  // Telemetry state
+  const attemptIdRef = useRef<string | null>(null);
+  const startMsRef = useRef<number>(0);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -83,14 +87,41 @@ export default function LoginPage() {
   const handleWalletAuth = async () => {
     if (!address || !provider) {
       setLocalError("Please connect your wallet first");
+      // Telemetry: validation failure
+      const attempt_id = authInstrumentation.submitLogin({ auth_method: "wallet", surface: "login_page" });
+      authInstrumentation.loginFailed({
+        auth_method: "wallet",
+        attempt_id,
+        startMs: Date.now(),
+        error: "wallet not connected",
+        failure_stage: "validation",
+        validation_error_count: 1,
+      });
       return;
     }
     clearAllErrors();
+    // Telemetry: submit
+    attemptIdRef.current = authInstrumentation.submitLogin({ auth_method: "wallet", surface: "login_page" });
+    startMsRef.current = Date.now();
     try {
       await authenticateWithWallet(address, provider, () => {
-        // Redirect on success — auth store handles navigation
+        // Telemetry: success (handled in hook/store ideally, but fallback here)
+        authInstrumentation.loginSuccess({
+          auth_method: "wallet",
+          attempt_id: attemptIdRef.current!,
+          startMs: startMsRef.current,
+          had_wallet_connected: true,
+        });
       });
-    } catch {
+    } catch (err) {
+      // Telemetry: failure
+      authInstrumentation.loginFailed({
+        auth_method: "wallet",
+        attempt_id: attemptIdRef.current!,
+        startMs: startMsRef.current,
+        error: err,
+        failure_stage: "response",
+      });
       // error already set in hook
     }
   };
@@ -99,6 +130,16 @@ export default function LoginPage() {
   const handleEmailLogin = async () => {
     if (!email || !password) {
       setLocalError("Please enter your email and password");
+      // Telemetry: validation failure
+      const attempt_id = authInstrumentation.submitLogin({ auth_method: "email", surface: "login_page" });
+      authInstrumentation.loginFailed({
+        auth_method: "email",
+        attempt_id,
+        startMs: Date.now(),
+        error: "missing required fields",
+        failure_stage: "validation",
+        validation_error_count: 2,
+      });
       return;
     }
     clearAllErrors();
@@ -108,6 +149,19 @@ export default function LoginPage() {
     } catch {
       // error already set in store
     }
+    // Telemetry: submit
+    attemptIdRef.current = authInstrumentation.submitLogin({ auth_method: "email", surface: "login_page" });
+    startMsRef.current = Date.now();
+    // TODO: Replace with real email login logic
+    setLocalError("Email login: wire to useAuth().loginWithEmail()");
+    // Telemetry: simulate failure for placeholder
+    authInstrumentation.loginFailed({
+      auth_method: "email",
+      attempt_id: attemptIdRef.current!,
+      startMs: startMsRef.current,
+      error: "not implemented",
+      failure_stage: "request",
+    });
   };
 
   const displayError = localError || walletError || authError || emailError;
@@ -121,12 +175,14 @@ export default function LoginPage() {
           <div className="border border-purple-500/20 rounded-xl p-8 bg-glass backdrop-blur-md shadow-lg">
 
             <div className="flex justify-center mb-8">
-              <Image
+              <OptimizedImage
                 src="/nftopia-04.svg"
                 alt="NFTopia Logo"
                 width={200}
                 height={60}
                 className="h-auto"
+                fallbackSrc="/images/fallbacks/collection-fallback.svg"
+                priority
               />
             </div>
 
