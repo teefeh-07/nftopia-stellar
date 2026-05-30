@@ -49,6 +49,11 @@ it("every event in EVENT_NAMES exists in TelemetryPayloadMap", () => {
     "cta_clicked",
     "nav_item_clicked",
     "section_viewed",
+    // Add experiment events
+    "experiment_exposed",
+    "experiment_interaction",
+    "experiment_conversion",
+    "experiment_assignment_info",
   ];
   for (const name of values) {
     expect(payloadKeys.includes(name)).toBe(true);

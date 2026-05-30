@@ -27,6 +27,70 @@ export const EVENT_NAMES = {
   ctaClicked: "cta_clicked",
   navItemClicked: "nav_item_clicked",
   sectionViewed: "section_viewed",
+  experimentExposed: "experiment_exposed",
+  experimentInteraction: "experiment_interaction",
+  experimentConversion: "experiment_conversion",
+  experimentAssignmentInfo: "experiment_assignment_info",
 } as const;
 
 export type TelemetryEventName = (typeof EVENT_NAMES)[keyof typeof EVENT_NAMES];
+
+// Experiment event payload types
+export interface ExperimentExposedPayload {
+  experiment_id: string;
+  experiment_name: string;
+  variant_id: string;
+  variant_name: string;
+  variant_version: number;
+  surface: string;
+  placement_category: string;
+  cta_label?: string;
+  cta_icon?: string;
+  cta_color_scheme?: string;
+  cta_size?: string;
+  cta_position?: string;
+  assigned_at_timestamp_ms: number;
+  is_control: boolean;
+  target_user_segment?: string;
+  rollout_percentage?: number;
+  exposure_session_id: string;
+  experiment_session_id: string;
+}
+
+export interface ExperimentInteractionPayload {
+  experiment_id: string;
+  variant_id: string;
+  interaction_type: 'click' | 'hover' | 'focus' | 'dismiss';
+  interaction_timestamp_ms: number;
+  time_to_interaction_ms: number;
+  surface: string;
+  placement_category: string;
+  is_control: boolean;
+  exposure_session_id: string;
+  interaction_sequence: number;
+}
+
+export interface ExperimentConversionPayload {
+  experiment_id: string;
+  variant_id: string;
+  conversion_type: string;
+  conversion_value?: number;
+  conversion_timestamp_ms: number;
+  time_from_exposure_to_conversion_ms: number;
+  interaction_occurred: boolean;
+  exposure_session_id: string;
+  experiment_session_id?: string;
+  funnel_stage_at_conversion?: string;
+  conversion_id: string;
+}
+
+export interface ExperimentAssignmentInfoPayload {
+  active_experiments: Array<{
+    experiment_id: string;
+    variant_id: string;
+    variant_name: string;
+    assigned_at_timestamp_ms: number;
+    is_control: boolean;
+  }>;
+  assignment_seed: string;
+}

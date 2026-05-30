@@ -6,11 +6,66 @@ import { TrendingUp, Users, DollarSign, Package } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/lib/stores/preferences-store";
 import { useLocalizedRoute } from "@/lib/routing";
+import { useExperimentVariant } from '@/hooks/useExperiment';
+import { useEffect, useRef } from 'react';
+import { telemetry } from '@/lib/telemetry';
+import { sanitizeTelemetryPayload } from '@/lib/telemetry/sanitizer';
+import { EVENT_NAMES } from '@/lib/telemetry/events';
 
 export default function CreatorDashboardPage() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const localizedRoute = useLocalizedRoute();
+  const copyAssignment = useExperimentVariant('creator-onboarding-copy-2026-q2');
+  const exposureSentRef = useRef(false);
+  const exposureSessionIdRef = useRef<string | null>(null);
+  const exposureTimestampRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!copyAssignment || exposureSentRef.current) return;
+    const exposureSessionId = crypto.randomUUID();
+    exposureSessionIdRef.current = exposureSessionId;
+    exposureTimestampRef.current = Date.now();
+    telemetry.track(
+      EVENT_NAMES.experimentExposed,
+      sanitizeTelemetryPayload({
+        experiment_id: copyAssignment.experiment_id,
+        experiment_name: 'Creator Onboarding Copy Variants',
+        variant_id: copyAssignment.variant_id,
+        variant_name: copyAssignment.variant_name,
+        variant_version: 1,
+        surface: 'creator_dashboard_cta',
+        placement_category: 'inline_card',
+        cta_label: copyAssignment.variant_name,
+        assigned_at_timestamp_ms: copyAssignment.assigned_at_timestamp_ms,
+        is_control: copyAssignment.is_control,
+        target_user_segment: 'creators_only',
+        rollout_percentage: 100,
+        exposure_session_id: exposureSessionId,
+        experiment_session_id: '',
+      })
+    );
+    exposureSentRef.current = true;
+  }, [copyAssignment]);
+
+  const handleCreateCollectionClick = () => {
+    if (!copyAssignment || !exposureSessionIdRef.current || !exposureTimestampRef.current) return;
+    telemetry.track(
+      EVENT_NAMES.experimentInteraction,
+      sanitizeTelemetryPayload({
+        experiment_id: copyAssignment.experiment_id,
+        variant_id: copyAssignment.variant_id,
+        interaction_type: 'click',
+        interaction_timestamp_ms: Date.now(),
+        time_to_interaction_ms: Date.now() - exposureTimestampRef.current,
+        surface: 'creator_dashboard_cta',
+        placement_category: 'inline_card',
+        is_control: copyAssignment.is_control,
+        exposure_session_id: exposureSessionIdRef.current,
+        interaction_sequence: 1,
+      })
+    );
+  };
 
   const dashboardCards = [
     {
@@ -179,6 +234,7 @@ export default function CreatorDashboardPage() {
           <Link
             href={localizedRoute("/creator-dashboard/create-your-collection")}
             className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            onClick={handleCreateCollectionClick}
           >
             {t("creatorDashboard.createCollection")}
           </Link>

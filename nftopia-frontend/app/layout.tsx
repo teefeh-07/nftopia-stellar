@@ -3,6 +3,7 @@ import "./globals.css";
 import ApolloWrapper from "@/lib/graphql/apollo-wrapper";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import dynamic from "next/dynamic";
+import ExperimentProviderWrapper from '@/lib/experiments/ExperimentProvider';
 
 // ─── SAFE COMPILER SEPARATION ──────────────────────────────────────────
 // Pulling in your isolated TelemetryProvider file with SSR disabled.
@@ -87,10 +88,11 @@ export default function RootLayout({
       <body className={inter.className}>
         {/* Mounted safely at the top of the body tree */}
         <TelemetryProvider />
-        
-        <AuthProvider>
-          <ApolloWrapper>{children}</ApolloWrapper>
-        </AuthProvider>
+        <ExperimentProviderWrapper>
+          <AuthProvider>
+            <ApolloWrapper>{children}</ApolloWrapper>
+          </AuthProvider>
+        </ExperimentProviderWrapper>
       </body>
     </html>
   );
