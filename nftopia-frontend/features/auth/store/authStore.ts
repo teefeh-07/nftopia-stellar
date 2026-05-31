@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthStore>()(
           },
           verifySignature: async (
             _walletAddress: string,
-            _signature: string,
+            _signature: [string, string],
             _nonce: string,
             _walletProvider: 'freighter' | 'albedo' | 'walletconnect',
             _locale: string
@@ -82,9 +82,6 @@ export const useAuthStore = create<AuthStore>()(
           },
           isAccessTokenExpired: () => true,
           logout: async () => {
-            throw new Error("Not implemented");
-          },
-          emailLogin: async (_email: string, _password: string) => {
             throw new Error("Not implemented");
           },
           refreshToken: async () => {
