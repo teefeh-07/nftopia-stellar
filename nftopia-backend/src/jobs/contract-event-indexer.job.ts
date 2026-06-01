@@ -5,6 +5,7 @@ import { Repository, DataSource } from 'typeorm';
 import { MarketplaceSettlementClient } from '../modules/stellar/marketplace-settlement.client';
 import { SystemSettings } from './system-settings.entity';
 import { ContractEvent } from './entities/contract-event.entity';
+import { ContractEventDlq } from './entities/contract-event-dlq.entity';
 
 /** SystemSettings key used to persist the contract-event cursor. */
 export const LAST_CONTRACT_EVENT_LEDGER_KEY =
@@ -139,10 +140,48 @@ export class ContractEventIndexerJob {
           }
         } catch (err) {
           failedCount++;
+          const contractId = str(raw['contractId'] ?? raw['contract_id']);
+          const txHash = str(raw['txHash'] ?? raw['tx_hash']);
+          const eventType =
+            raw['eventType'] != null
+              ? str(raw['eventType'])
+              : raw['type'] != null
+                ? str(raw['type'])
+                : undefined;
+          const ledger = Number(raw['ledger'] ?? 0);
+          const eventIndex = Number(
+            raw['eventIndex'] ?? raw['event_index'] ?? 0,
+          );
+
+          try {
+            const dlqEntity = manager.create(ContractEventDlq, {
+              contractId,
+              ledger,
+              txHash,
+              eventIndex,
+              eventType,
+              payload: raw,
+              errorMessage: err instanceof Error ? err.message : String(err),
+              stack: err instanceof Error ? err.stack : undefined,
+              firstFailedAt: new Date(),
+              lastFailedAt: new Date(),
+              nextRetryAt: new Date(Date.now() + 60 * 1000), // Retry in 1 minute
+              status: 'pending',
+              attemptCount: 1,
+            });
+            await manager.save(ContractEventDlq, dlqEntity);
+            this.logger.log(
+              `dlqEnqueued: 1 for txHash=${txHash} index=${eventIndex}`,
+            );
+          } catch (dlqErr) {
+            this.logger.error(
+              `Failed to save to DLQ for txHash=${txHash}: ${String(dlqErr)}`,
+            );
+          }
+
           this.logger.warn(
             `Failed to persist event txHash=${str(raw['txHash'])} index=${str(raw['eventIndex'])}: ${String(err)}`,
           );
-          throw err;
         }
       }
     });

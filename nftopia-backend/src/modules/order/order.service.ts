@@ -137,7 +137,10 @@ export class OrderService {
     };
   }
 
-  async getSalesAnalytics(periodStart: Date, periodEnd: Date): Promise<{
+  async getSalesAnalytics(
+    periodStart: Date,
+    periodEnd: Date,
+  ): Promise<{
     volume: string;
     count: number;
     averagePrice: string;
