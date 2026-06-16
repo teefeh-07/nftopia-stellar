@@ -1,4 +1,3 @@
-version: '3.9'
 
 services:
   backend:
@@ -20,16 +19,15 @@ services:
       meilisearch:
         condition: service_started
     environment:
-      - PORT=3000
-      - GRAPHQL_PORT=3001
-      - NODE_ENV=development
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-nftopia}
-      - MEILISEARCH_HOST=http://meilisearch:7700
-      - MEILISEARCH_API_KEY=${MEILISEARCH_API_KEY:-dev-search-key}
+      - PORT=${PORT}
+      - NODE_ENV=${NODE_ENV}
+      - SOROBAN_RPC_URL=${SOROBAN_RPC_URL}
+      - MARKETPLACE_SETTLEMENT_CONTRACT_ID=${MARKETPLACE_SETTLEMENT_CONTRACT_ID}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     volumes:
-      - .:/usr/src/app
+      # - .:/usr/src/app
       - /usr/src/app/node_modules
 
   postgres:
