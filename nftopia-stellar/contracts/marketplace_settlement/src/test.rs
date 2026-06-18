@@ -592,7 +592,7 @@ fn test_rate_limiter_defaults_and_cooldown_active() {
     let res = client.try_create_sale(&seller, &nft, &1u64, &1_000_000i128, &asset, &86400u64);
 
     if let Err(Ok(invoke_error)) = res {
-        let actual_error: SettlementError = invoke_error.into();
+        let actual_error: SettlementError = invoke_error;
         assert_eq!(actual_error, SettlementError::CooldownActive);
     } else {
         panic!("Expected Err(Ok(CooldownActive)), got: {:?}", res);
@@ -617,7 +617,7 @@ fn test_rate_limiter_independent_users_and_functions() {
     let res = client.try_create_sale(&seller_1, &nft, &1u64, &1_000_000i128, &asset, &86400u64);
 
     if let Err(Ok(invoke_error)) = res {
-        let actual_error: SettlementError = invoke_error.into();
+        let actual_error: SettlementError = invoke_error;
         assert_eq!(actual_error, SettlementError::CooldownActive);
     } else {
         panic!("Expected Err(Ok(CooldownActive)), got: {:?}", res);
@@ -660,7 +660,7 @@ fn test_rate_limiter_window_reset() {
     let res = client.try_create_sale(&seller, &nft, &1u64, &1_000_000i128, &asset, &86400u64);
 
     if let Err(Ok(invoke_error)) = res {
-        let actual_error: SettlementError = invoke_error.into();
+        let actual_error: SettlementError = invoke_error;
         assert_eq!(actual_error, SettlementError::CooldownActive);
     } else {
         panic!("Expected Err(Ok(CooldownActive)), got: {:?}", res);
@@ -724,7 +724,7 @@ fn test_rate_limiter_admin_update_config() {
     let res = c2.try_place_bid(&id, &bidder, &130_000i128, &None);
 
     if let Err(Ok(invoke_error)) = res {
-        let actual_error: SettlementError = invoke_error.into();
+        let actual_error: SettlementError = invoke_error;
         assert_eq!(actual_error, SettlementError::CooldownActive);
     } else {
         panic!("Expected Err(Ok(CooldownActive)), got: {:?}", res);
