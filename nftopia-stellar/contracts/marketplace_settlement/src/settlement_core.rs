@@ -95,9 +95,16 @@ impl MarketplaceSettlement {
             // Check NFT ownership
             asset_utils::check_nft_ownership(&nft_address, token_id, &seller, &env)?;
 
-            // Calculate royalties
-            let royalty_distribution =
-                RoyaltyDistributor::calculate_royalties(&env, &nft_address, token_id, price)?;
+            // Calculate royalties (with seller and platform addresses)
+            let fee_config = FeeManager::get_fee_config(&env)?;
+            let royalty_distribution = RoyaltyDistributor::calculate_royalties(
+                &env,
+                &nft_address,
+                token_id,
+                price,
+                &seller,
+                &fee_config.fee_recipient,
+            )?;
 
             // Calculate platform fee
             let platform_fee = FeeManager::calculate_fee(&env, price, &seller)?;

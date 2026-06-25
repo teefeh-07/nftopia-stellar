@@ -422,7 +422,9 @@ fn test_create_trade_success() {
     let dummy = RoyaltyDistribution {
         creator_address: creator.clone(),
         creator_percentage: 500,
+        seller_address: creator.clone(),
         seller_percentage: 9000,
+        platform_address: creator.clone(),
         platform_percentage: 500,
         total_amount: 0,
         amounts: soroban_sdk::Map::new(&env),
@@ -466,7 +468,9 @@ fn test_create_bundle_success() {
     let dummy = RoyaltyDistribution {
         creator_address: creator.clone(),
         creator_percentage: 500,
+        seller_address: creator.clone(),
         seller_percentage: 9000,
+        platform_address: creator.clone(),
         platform_percentage: 500,
         total_amount: 0,
         amounts: soroban_sdk::Map::new(&env),
