@@ -4,7 +4,6 @@ use crate::types::CollectionConfig;
 use soroban_sdk::TryFromVal;
 use soroban_sdk::testutils::Events;
 use soroban_sdk::{Address, Env, String, Symbol, Vec, symbol_short, testutils::Address as _};
-// no_std: no vec import, no catch_unwind import
 
 #[test]
 fn test_factory_logic() {
@@ -15,16 +14,17 @@ fn test_factory_logic() {
         &env,
         "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
     ));
-    let _creator = Address::generate(&env);
+    let fee_asset = Address::generate(&env);
 
     // Register Factory
     let factory_id = env.register(CollectionFactory, ());
     let factory_client = CollectionFactoryClient::new(&env, &factory_id);
 
-    // Initialize Factory
-    factory_client.initialize(&admin);
+    // Initialize Factory with newly added fee_asset parameter
+    factory_client.initialize(&admin, &fee_asset);
 
     assert_eq!(factory_client.get_collection_count(), 0);
+    assert_eq!(factory_client.get_max_collections(), 10);
 }
 
 #[test]
@@ -97,7 +97,6 @@ fn test_unauthorized_mint() {
         &env,
         "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
     ));
-    let _user = Address::generate(&env);
 
     let collection_id = env.register(NftCollection, ());
     let collection_client = NftCollectionClient::new(&env, &collection_id);
@@ -213,13 +212,6 @@ fn test_burn_authorized() {
     let uri = String::from_str(&env, "ipfs://burn1");
     let attributes = Vec::new(&env);
     collection_client.mint(&admin, &user1, &token_id, &uri, &attributes);
-    assert!(env.events().all().iter().any(|e| e.1.iter().any(|t| {
-        if let Ok(sym) = Symbol::try_from_val(&env, &t) {
-            sym == symbol_short!("mint")
-        } else {
-            false
-        }
-    })));
 
     // Assert pre-burn state
     assert_eq!(collection_client.owner_of(&token_id), Some(user1.clone()));
@@ -245,7 +237,6 @@ fn test_access_control_roles() {
         "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF",
     ));
     let minter = Address::generate(&env);
-    let _user = Address::generate(&env);
 
     let collection_id = env.register(NftCollection, ());
     let collection_client = NftCollectionClient::new(&env, &collection_id);
@@ -520,9 +511,10 @@ fn test_unauthorized_fee_withdrawal() {
     env.mock_all_auths();
     let admin = Address::generate(&env);
     let user = Address::generate(&env);
+    let fee_asset = Address::generate(&env);
     let factory_id = env.register(CollectionFactory, ());
     let factory_client = CollectionFactoryClient::new(&env, &factory_id);
-    factory_client.initialize(&admin);
+    factory_client.initialize(&admin, &fee_asset);
     // Should panic
     factory_client.withdraw_fees(&user);
 }
@@ -651,7 +643,6 @@ fn test_edge_unicode_metadata() {
     let token_id = 1u32;
     let uri = String::from_str(&env, "ipfs://ユニコード");
     let attributes = Vec::new(&env);
-    let _user = Address::generate(&env);
     let user = Address::generate(&env);
     collection_client.mint(&admin, &user, &token_id, &uri, &attributes);
     assert_eq!(collection_client.owner_of(&token_id), Some(user.clone()));

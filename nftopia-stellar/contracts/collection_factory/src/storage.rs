@@ -6,9 +6,13 @@ pub enum DataKey {
     // Factory Keys
     FactoryAdmin,
     FactoryFee,
+    FeeAsset,
     CollectionCount,
     CollectionAddress(u32),
     CollectionInfo(u32),
+
+    MaxCollectionsPerCreator,
+    CreatorCollectionCount(Address),
 
     // Collection Keys
     CollectionConfig,

@@ -83,13 +83,15 @@ impl AuctionEngine {
             extension_window: config.extension_window,
             currency: currency.clone(),
             royalty_info: RoyaltyDistribution {
-                creator_address: seller.clone(), // Placeholder
-                creator_percentage: 500,         // 5%
-                seller_percentage: 9500,         // 95%
+                creator_address: seller.clone(),
+                creator_percentage: 500,
+                seller_address: seller.clone(),
+                seller_percentage: 9500,
+                platform_address: seller.clone(),
                 platform_percentage: 0,
                 total_amount: 0,
                 amounts: Map::new(env),
-            }, // Would be set from NFT contract
+            },
             platform_fee: 0, // Would be calculated
         };
 
