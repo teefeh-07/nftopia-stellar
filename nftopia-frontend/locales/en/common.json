@@ -377,7 +377,11 @@
     "singleOrBatch": "Single or batch upload",
     "goToMint": "Go to Mint",
     "createCollection": "Create Collection",
-    "collectionDescription": "Configure smart contract properties and deployment options for collections."
+    "collectionDescription": "Configure smart contract properties and deployment options for collections.",
+    "errorFallbackTitle": "Unable to Load Dashboard",
+    "errorFallbackMessage": "Something went wrong while rendering the dashboard. We have recorded this issue and are working to resolve it.",
+    "errorOfflineTitle": "No Internet Connection",
+    "errorOfflineMessage": "It looks like you're offline. Please check your network connection and try again."
   },
   "mintNFT": {
     "title": "Mint NFT",

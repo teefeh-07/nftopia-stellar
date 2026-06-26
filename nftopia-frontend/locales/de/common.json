@@ -273,7 +273,11 @@
       "quickActions": "Schnellaktionen",
       "mintNewNFT": "Neues NFT prägen",
       "singleOrBatch": "Einzel- oder Stapelupload",
-      "goToMint": "Zum Prägen"
+      "goToMint": "Zum Prägen",
+      "errorFallbackTitle": "Dashboard konnte nicht geladen werden",
+      "errorFallbackMessage": "Beim Laden des Dashboards ist ein Fehler aufgetreten. Wir haben diesen Fehler aufgezeichnet und arbeiten an einer Lösung.",
+      "errorOfflineTitle": "Keine Internetverbindung",
+      "errorOfflineMessage": "Es scheint, als wären Sie offline. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut."
     },
     "mintNFT": {
       "title": "NFT prägen",

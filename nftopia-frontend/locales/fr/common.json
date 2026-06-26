@@ -273,7 +273,11 @@
     "quickActions": "Actions rapides",
     "mintNewNFT": "Minter un nouveau NFT",
     "singleOrBatch": "Téléchargement unique ou par lot",
-    "goToMint": "Aller au mint"
+    "goToMint": "Aller au mint",
+    "errorFallbackTitle": "Impossible de charger le tableau de bord",
+    "errorFallbackMessage": "Un problème est survenu lors du chargement du tableau de bord. Nous avons enregistré cette erreur et travaillons à sa résolution.",
+    "errorOfflineTitle": "Pas de connexion internet",
+    "errorOfflineMessage": "Il semble que vous soyez hors ligne. Veuillez vérifier votre connexion réseau et réessayer."
   },
   "mintNFT": {
     "title": "Minter un NFT",
