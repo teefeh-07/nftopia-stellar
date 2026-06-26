@@ -98,6 +98,11 @@ type CollectionStats {
   ownerCount: Int!
 }
 
+input CreateBidInput {
+  auctionId: ID!
+  amount: Float!
+}
+
 input CreateCollectionInput {
   contractAddress: String!
   name: String!
@@ -205,6 +210,9 @@ type Mutation {
 
   """Unfollow a creator"""
   unfollowCreator(creatorId: ID!): FollowResult!
+
+  """Place a bid on an auction"""
+  placeBid(input: CreateBidInput!): Bid!
 }
 
 type NFT {
@@ -511,4 +519,3 @@ type FollowResult {
   followerCount: Int!
   isFollowing: Boolean!
 }
-

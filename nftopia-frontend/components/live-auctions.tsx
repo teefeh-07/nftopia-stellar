@@ -214,12 +214,14 @@ export function LiveAuctions() {
                   </span>
                   <span className="text-xs font-medium">{item.bidCount}</span>
                 </div>
-                <Button
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-4 py-1 text-xs"
-                >
-                  {t("liveAuctions.bid")}
-                </Button>
+                <Link href={`/marketplace/auction/${item.id}`}>
+                  <Button
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-4 py-1 text-xs"
+                  >
+                    {t("liveAuctions.bid")}
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
