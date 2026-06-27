@@ -126,4 +126,3 @@ pub fn apply_multiplier_cost_bps(cost: i128, bps: u32) -> i128 {
         .saturating_mul(bps as i128)
         .saturating_div(10_000)) as i128
 }
-
