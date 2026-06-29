@@ -1,5 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
+import {
+  Registry,
+  Counter,
+  Histogram,
+  collectDefaultMetrics,
+} from 'prom-client';
 
 export const registry = new Registry();
 
@@ -66,7 +71,8 @@ const businessTransactionsSettledTotal = new Counter({
 export class PrometheusService {
   private readonly logger = new Logger(PrometheusService.name);
 
-  startRequestTimer(method: string, route: string): () => number {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  startRequestTimer(_method?: string, _route?: string): () => number {
     const start = Date.now();
     return () => (Date.now() - start) / 1000;
   }
@@ -103,7 +109,11 @@ export class PrometheusService {
     }
   }
 
-  incrementHttpErrorsTotal(method: string, route: string, statusCode: number): void {
+  incrementHttpErrorsTotal(
+    method: string,
+    route: string,
+    statusCode: number,
+  ): void {
     try {
       httpErrorsTotal.inc({
         method,
@@ -151,7 +161,9 @@ export class PrometheusService {
     try {
       businessTransactionsSettledTotal.inc({ status });
     } catch (error) {
-      this.logger.warn(`Failed to increment transactions_settled_total: ${error}`);
+      this.logger.warn(
+        `Failed to increment transactions_settled_total: ${error}`,
+      );
     }
   }
 

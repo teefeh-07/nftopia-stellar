@@ -19,25 +19,61 @@ export class AdminController {
 
   @Put('users/:id/ban')
   @Roles(UserRole.ADMIN)
-  async banUser(@Param('id') id: string, @RequestUser() user: AuthUser, @Req() req: Request) {
-    return this.adminService.banUser(user.userId, id, req.ip, req.get('user-agent'));
+  async banUser(
+    @Param('id') id: string,
+    @RequestUser() user: AuthUser,
+    @Req() req: Request,
+  ) {
+    return this.adminService.banUser(
+      user.userId,
+      id,
+      req.ip,
+      req.get('user-agent'),
+    );
   }
 
   @Put('users/:id/unban')
   @Roles(UserRole.ADMIN)
-  async unbanUser(@Param('id') id: string, @RequestUser() user: AuthUser, @Req() req: Request) {
-    return this.adminService.unbanUser(user.userId, id, req.ip, req.get('user-agent'));
+  async unbanUser(
+    @Param('id') id: string,
+    @RequestUser() user: AuthUser,
+    @Req() req: Request,
+  ) {
+    return this.adminService.unbanUser(
+      user.userId,
+      id,
+      req.ip,
+      req.get('user-agent'),
+    );
   }
 
   @Put('collections/:id/hide')
   @Roles(UserRole.ADMIN, UserRole.MODERATOR)
-  async hideCollection(@Param('id') id: string, @RequestUser() user: AuthUser, @Req() req: Request) {
-    return this.adminService.hideCollection(user.userId, id, req.ip, req.get('user-agent'));
+  async hideCollection(
+    @Param('id') id: string,
+    @RequestUser() user: AuthUser,
+    @Req() req: Request,
+  ) {
+    return this.adminService.hideCollection(
+      user.userId,
+      id,
+      req.ip,
+      req.get('user-agent'),
+    );
   }
 
   @Put('collections/:id/verify')
   @Roles(UserRole.ADMIN)
-  async verifyCollection(@Param('id') id: string, @RequestUser() user: AuthUser, @Req() req: Request) {
-    return this.adminService.verifyCollection(user.userId, id, req.ip, req.get('user-agent'));
+  async verifyCollection(
+    @Param('id') id: string,
+    @RequestUser() user: AuthUser,
+    @Req() req: Request,
+  ) {
+    return this.adminService.verifyCollection(
+      user.userId,
+      id,
+      req.ip,
+      req.get('user-agent'),
+    );
   }
 }

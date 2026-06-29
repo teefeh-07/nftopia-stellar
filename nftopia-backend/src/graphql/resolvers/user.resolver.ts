@@ -28,11 +28,7 @@ import {
   GraphqlListing,
   ListingStatus,
 } from '../types/listing.types';
-import {
-  AuctionConnection,
-  GraphqlAuction,
-  AuctionStatus, // eslint-disable-line @typescript-eslint/no-unused-vars
-} from '../types/auction.types';
+import { AuctionConnection, GraphqlAuction } from '../types/auction.types';
 import { GraphqlOrder, OrderConnection } from '../types/order.types';
 import type { Nft } from '../../modules/nft/entities/nft.entity';
 import type { Listing } from '../../modules/listing/entities/listing.entity';
@@ -90,20 +86,22 @@ export class UserResolver {
     description: 'Fetch dashboard stats for the authenticated user',
   })
   @UseGuards(GqlAuthGuard)
-  async dashboardStats(@Context() context: GraphqlContext) {
+  async dashboardStats(
+    @Context() context: GraphqlContext,
+  ): Promise<DashboardStats> {
     const userId = context.user?.userId;
     if (!userId) {
       throw new UnauthorizedException('Authentication is required');
     }
 
-    const [nfts, orders, followers] = await Promise.all([
+    const [nfts, orders] = await Promise.all([
       this.nftService.findByOwner(userId, {}),
       this.orderService.findAll({ buyerId: userId }),
-      this.auctionService.findAll({ sellerId: userId }),
     ]);
 
+    // Explicitly cast or stringify the enum status to safely evaluate against a string literal
     const totalSales = orders
-      .filter((order) => order.status === 'COMPLETED')
+      .filter((order) => String(order.status) === 'COMPLETED')
       .reduce((sum, order) => sum + Number(order.price), 0);
 
     return {

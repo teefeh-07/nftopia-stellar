@@ -31,7 +31,6 @@ import { StellarTransformInterceptor } from './interceptors/stellar-transform.in
 import { SorobanRpcService } from './services/soroban-rpc.service';
 import { StellarAccountService } from './services/stellar-account.service';
 import { MetricsInterceptor } from './common/metrics/metrics.interceptor';
-import { PrometheusService } from './common/metrics/prometheus';
 
 function createCorsConfig() {
   const customOrigin = process.env.CORS_ORIGIN;

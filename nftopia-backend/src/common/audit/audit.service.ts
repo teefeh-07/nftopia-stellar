@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuditLog, AuditAction } from './audit-log.entity';
@@ -75,7 +71,9 @@ export class AuditService {
     }
 
     if (filters.entityId) {
-      query.andWhere('log.entityId = :entityId', { entityId: filters.entityId });
+      query.andWhere('log.entityId = :entityId', {
+        entityId: filters.entityId,
+      });
     }
 
     if (filters.startDate) {
