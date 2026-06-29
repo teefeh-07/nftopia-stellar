@@ -72,7 +72,7 @@ describe("NFT Detail SEO & Server Wrapper", () => {
       expect(metadata.description).toBe("An NFT of a voyager traveling the Stellar universe.");
       expect(metadata.openGraph?.title).toBe("Stellar Voyager | NFTopia Marketplace");
       expect(metadata.openGraph?.images).toEqual(["https://example.com/voyager.png"]);
-      expect(metadata.twitter?.card).toBe("summary_large_image");
+      expect((metadata.twitter as any)?.card).toBe("summary_large_image");
       expect(metadata.alternates?.canonical).toBe("http://localhost:3000/en/marketplace/nft-1");
     });
 
